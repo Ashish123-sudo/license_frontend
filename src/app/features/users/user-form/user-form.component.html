@@ -1,0 +1,70 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit User' : 'New Product User' }}</h1>
+  </div>
+
+  <div class="content-card">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="standard-form">
+
+      <div class="section-header">
+        <h3 class="section-title">ACCOUNT IDENTITY</h3>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Username <span class="required-star">*</span></label>
+        <div class="input-container">
+          <input type="text" class="form-input" formControlName="userName" placeholder="e.g. ashish_admin">
+          <div class="field-error" *ngIf="userForm.get('userName')?.invalid && userForm.get('userName')?.touched">
+            Username is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Assigned Role <span class="required-star">*</span></label>
+        <div class="input-container">
+          <select class="form-input" formControlName="roleId">
+            <option value="" disabled>Select a role...</option>
+            @for (role of roles; track role.roleId) {
+              <option [value]="role.roleId">{{ role.name }}</option>
+            }
+          </select>
+          <div class="field-error" *ngIf="userForm.get('roleId')?.invalid && userForm.get('roleId')?.touched">
+            Role is required
+          </div>
+        </div>
+      </div>
+
+      <!-- Password fields hidden in edit mode — only shown when creating -->
+      @if (!isEditMode) {
+        <div class="form-row">
+          <label class="form-label">Password <span class="required-star">*</span></label>
+          <div class="input-container">
+            <input type="password" class="form-input" formControlName="password" placeholder="Min 8 characters">
+            <div class="field-error" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+              Password must be at least 8 characters
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Confirm Password <span class="required-star">*</span></label>
+          <div class="input-container">
+            <input type="password" class="form-input" formControlName="confirmPassword" placeholder="Re-type password">
+            @if (userForm.errors?.['mismatch'] && userForm.get('confirmPassword')?.touched) {
+              <div class="field-error">Passwords do not match</div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="form-actions-footer">
+        <button type="submit" class="btn-primary" [disabled]="!userForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Save User' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</div>

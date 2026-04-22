@@ -1,0 +1,39 @@
+<mat-toolbar class="app-header">
+  <div class="header-left">
+    <button mat-icon-button class="menu-btn" (click)="toggleSidenav.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-icon class="app-logo">receipt_long</mat-icon>
+    <span class="app-brand">License Management</span>
+  </div>
+
+  <div class="header-center">
+    <div class="search-box">
+      <div class="search-filter">
+        <span>All</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </div>
+      <span class="search-divider">|</span>
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" placeholder="Search...">
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="user-avatar" [matMenuTriggerFor]="userMenu">
+      {{ auth.currentUser()?.fullName?.charAt(0) || 'A' }}
+    </div>
+  </div>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <div class="user-menu-info">
+      <p class="name">{{ auth.currentUser()?.fullName }}</p>
+      <p class="role">{{ auth.currentUser()?.roleName }}</p>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

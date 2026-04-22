@@ -1,0 +1,165 @@
+<div class="list-page">
+
+  <!-- LIST PANEL -->
+  <div class="list-panel" [class.shrink]="selectedContact">
+
+    <div class="list-header">
+      <h2 class="list-title">Contacts</h2>
+      <button mat-flat-button class="new-btn" [routerLink]="['/contacts/new']">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="contacts" class="contacts-table">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>NAME</th>
+          <td mat-cell *matCellDef="let contact">
+            <span class="name-link" (click)="selectContact(contact)">
+              {{ contact.firstName }} {{ contact.lastName }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>EMAIL</th>
+          <td mat-cell *matCellDef="let contact">{{ contact.email }}</td>  <!-- was emailId — fixed -->
+        </ng-container>
+
+        <ng-container matColumnDef="designation">
+          <th mat-header-cell *matHeaderCellDef>DESIGNATION</th>
+          <td mat-cell *matCellDef="let contact">{{ contact.designation }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="organization">
+          <th mat-header-cell *matHeaderCellDef>ORGANIZATION</th>
+          <td mat-cell *matCellDef="let contact">{{ contact.organization?.orgName }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          class="table-row"
+          [class.selected-row]="selectedContact?.contactId === row.contactId"
+          (click)="selectContact(row)">
+        </tr>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let contact" class="actions-cell">
+            <button mat-icon-button [routerLink]="['/contacts', contact.contactId, 'edit']">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteContact(contact); $event.stopPropagation()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+      </table>
+
+      <div *ngIf="loading" class="loading-state">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span>Loading contacts...</span>
+      </div>
+
+      <div *ngIf="!loading && contacts.length === 0" class="empty-list-state">
+        <mat-icon>person_off</mat-icon>
+        <p>No contacts found.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" *ngIf="selectedContact">
+
+    <div class="detail-header">
+      <button class="detail-back-btn" mat-icon-button (click)="closeDetail()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h3 class="detail-name">{{ selectedContact.firstName }} {{ selectedContact.lastName }}</h3>
+      <div class="detail-actions">
+        <button mat-flat-button class="new-btn"
+          [routerLink]="['/contacts', selectedContact.contactId, 'edit']">
+          Edit
+        </button>
+        <button mat-icon-button class="detail-close-btn" (click)="closeDetail()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-tabs">
+      <button class="detail-tab active">Overview</button>
+    </div>
+
+    <div class="detail-body">
+
+      <div class="contact-card">
+        <div class="contact-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="contact-info">
+          <div class="contact-name">
+            {{ selectedContact.firstName }} {{ selectedContact.lastName }}
+          </div>
+          <div class="contact-detail" *ngIf="selectedContact.designation">
+            <mat-icon class="detail-icon">work</mat-icon>
+            {{ selectedContact.designation }}
+          </div>
+          <div class="contact-detail" *ngIf="selectedContact.email">   <!-- was emailId — fixed -->
+            <mat-icon class="detail-icon">email</mat-icon>
+            {{ selectedContact.email }}
+          </div>
+          <div class="contact-detail" *ngIf="selectedContact.mobile">
+            <mat-icon class="detail-icon">phone</mat-icon>
+            {{ selectedContact.mobile }}
+          </div>
+          <div class="contact-detail" *ngIf="selectedContact.linkedIn">
+            <mat-icon class="detail-icon">link</mat-icon>
+            <a [href]="selectedContact.linkedIn" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-title">DETAILS</div>
+
+        <div class="section-row" *ngIf="selectedContact.organization?.orgName">
+          <span class="section-label">Organization</span>
+          <span class="section-value">{{ selectedContact.organization?.orgName }}</span>
+        </div>
+        <div class="section-row" *ngIf="selectedContact.role">
+          <span class="section-label">Role</span>
+          <span class="section-value">{{ selectedContact.role }}</span>
+        </div>
+        <div class="section-row" *ngIf="selectedContact.officePhone">
+          <span class="section-label">Office Phone</span>
+          <span class="section-value">
+            {{ selectedContact.officePhone }}
+            <span *ngIf="selectedContact.ext"> ext. {{ selectedContact.ext }}</span>
+          </span>
+        </div>
+        <div class="section-row" *ngIf="selectedContact.fax">
+          <span class="section-label">Fax</span>
+          <span class="section-value">{{ selectedContact.fax }}</span>
+        </div>
+
+        <div class="section-row">
+          <span class="section-label">Status</span>
+          <span [class]="selectedContact.isActive ? 'badge-active' : 'badge-inactive'">
+            {{ selectedContact.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <div class="section-empty"
+          *ngIf="!selectedContact.organization?.orgName && !selectedContact.role && !selectedContact.officePhone && !selectedContact.fax">
+          No details on file.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

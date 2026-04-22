@@ -1,0 +1,81 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit License Type' : 'Create License Type' }}</h1>
+  </div>
+
+  <div class="content-card">
+    <form [formGroup]="licenseForm" (ngSubmit)="onSubmit()" class="standard-form">
+      
+      <div class="section-header">
+        <h3 class="section-title">APPLICATION ASSIGNMENT</h3>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Application (App ID) <span class="required-star">*</span></label>
+        <div class="input-container">
+          <select class="form-input" formControlName="appId">
+            <option value="" disabled>Select Application...</option>
+            @for (app of applications; track app.appId) {
+              <option [value]="app.appId">{{ app.appName }} (ID: {{app.appId}})</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3 class="section-title">PLAN CONFIGURATION</h3>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Pricing Plan Name <span class="required-star">*</span></label>
+        <div class="input-container">
+          <input type="text" class="form-input" formControlName="pricingPlan" placeholder="e.g. Enterprise Tier">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Pricing Limit & Unit <span class="required-star">*</span></label>
+        <div class="input-container multi-input-row">
+          <input type="number" class="form-input" formControlName="pricingLimit" placeholder="Limit (e.g. 500)">
+          <select class="form-input" formControlName="limitUom">
+            <option value="Users">Users</option>
+            <option value="Requests">Requests</option>
+            <option value="GB">GB Storage</option>
+            <option value="Instances">Instances</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Limit Frequency <span class="required-star">*</span></label>
+        <div class="input-container">
+          <select class="form-input" formControlName="limitFrequency">
+            <option value="1">One-time</option>
+            <option value="30">Monthly (30 Days)</option>
+            <option value="365">Yearly (365 Days)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3 class="section-title">VALIDITY PERIOD</h3>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Dates <span class="required-star">*</span></label>
+        <div class="input-container multi-input-row">
+          <input type="date" class="form-input" formControlName="issueDate">
+          <span class="to-text">to</span>
+          <input type="date" class="form-input" formControlName="expiryDate">
+        </div>
+      </div>
+
+      <div class="form-actions-footer">
+        <button type="submit" class="btn-primary" [disabled]="!licenseForm.valid">
+          {{ isEditMode ? 'Update License Type' : 'Create License Type' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

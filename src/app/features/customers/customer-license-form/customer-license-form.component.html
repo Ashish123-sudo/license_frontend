@@ -1,0 +1,75 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit Assignment' : 'Assign Customer License' }}</h1>
+  </div>
+
+  <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="assign-form">
+
+    <div class="form-row">
+      <label class="form-label">Application <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <select class="form-input" formControlName="appId" (change)="onAppChange()">
+          <option value="" disabled>Select App...</option>
+          @for (app of applications; track app.appId) {
+            <option [value]="app.appId">{{ app.appName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Organization / Customer <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <select class="form-input" formControlName="orgId">
+          <option value="" disabled>Select Customer...</option>
+          @for (org of organizations; track org.orgId) {
+            <option [value]="org.orgId">{{ org.orgName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">License Type <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <select class="form-input" formControlName="licenseTypeId">
+          <option value="" disabled>
+            {{ filteredTypes.length ? 'Select Plan...' : 'Select an App first' }}
+          </option>
+          @for (type of filteredTypes; track type.licenseTypeId) {
+            <option [value]="type.licenseTypeId">
+              {{ type.pricingPlan }} (Limit: {{ type.pricingLimit }})
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">No. of Licenses <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <input type="number" class="form-input" formControlName="licenseCount" placeholder="e.g. 10">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">License Status</label>
+      <div class="input-wrapper checkbox-wrap">
+        <input type="checkbox" id="isActive" formControlName="isActive">
+        <label for="isActive" class="checkbox-label">
+          {{ customerForm.get('isActive')?.value ? 'Active' : 'Inactive' }}
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-save" [disabled]="!customerForm.valid">
+        {{ isEditMode ? 'Update Assignment' : 'Create Assignment' }}
+      </button>
+      <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+    </div>
+
+  </form>
+
+</div>

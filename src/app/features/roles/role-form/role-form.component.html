@@ -1,0 +1,56 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit Role' : 'New Product Role' }}</h1>
+  </div>
+
+  <div class="content-card">
+    <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="standard-form">
+
+      <div class="section-header">
+        <h3 class="section-title">ROLE DETAILS</h3>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Role Name <span class="required-star">*</span></label>
+        <div class="input-container">
+          <input 
+            type="text" 
+            class="form-input" 
+            formControlName="name"
+            placeholder="e.g. System Administrator"
+          >
+          <div class="field-error" *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched">
+            Role name is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Permissions Description</label>
+        <div class="input-container">
+          <textarea 
+            class="form-input custom-textarea" 
+            formControlName="description"
+            placeholder="List permissions or role duties..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <div class="input-container checkbox-alignment">
+          <input type="checkbox" class="styled-checkbox" formControlName="isActive" id="isActive">
+          <label for="isActive" class="checkbox-label">Role is Active and assignable</label>
+        </div>
+      </div>
+
+      <div class="form-actions-footer">
+        <button type="submit" class="btn-primary" [disabled]="!roleForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Save Role' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</div>

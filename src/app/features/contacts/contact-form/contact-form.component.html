@@ -1,0 +1,115 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit Contact' : 'New Contact' }}</h1>
+  </div>
+
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+
+    <div class="org-section">
+      <div class="form-row full-width">
+        <label class="form-label">Organization <span class="required">*</span></label>
+        <div class="input-wrapper">
+          <select class="form-input" formControlName="orgId">
+            <option value="" disabled>Select organization...</option>
+            @for (org of organizations; track org.orgId) {
+              <option [value]="org.orgId">{{ org.orgName }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar-top">
+      <button type="button" class="btn-add" (click)="addContact()">+ Add Another Contact</button>
+    </div>
+
+    <div formArrayName="contacts">
+      @for (contact of contactsArray.controls; track $index) {
+        <div class="contact-card" [formGroupName]="$index">
+          <div class="contact-card-header">
+            <span class="contact-card-title">Contact {{ $index + 1 }}</span>
+            @if (contactsArray.length > 1) {
+              <button type="button" class="btn-remove" (click)="removeContact($index)">Remove</button>
+            }
+          </div>
+
+          <div class="card-body">
+            <div class="form-row">
+              <label class="form-label">First Name <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input type="text" class="form-input" formControlName="firstName" placeholder="First Name">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Last Name <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input type="text" class="form-input" formControlName="lastName" placeholder="Last Name">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Designation</label>
+              <div class="input-wrapper">
+                <input type="text" class="form-input" formControlName="designation" placeholder="e.g. CEO, Manager">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Role</label>
+              <div class="input-wrapper">
+                <input type="text" class="form-input" formControlName="role" placeholder="e.g. Decision Maker, Technical">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Office Phone</label>
+              <div class="input-wrapper">
+                <div class="split-row">
+                  <input type="tel" class="form-input" formControlName="officePhone" placeholder="Office Phone">
+                  <input type="text" class="form-input ext" formControlName="ext" placeholder="Ext">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Mobile</label>
+              <div class="input-wrapper">
+                <input type="tel" class="form-input" formControlName="mobile" placeholder="Mobile Number">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Fax</label>
+              <div class="input-wrapper">
+                <input type="text" class="form-input" formControlName="fax" placeholder="Fax Number">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">E-Mail</label>
+              <div class="input-wrapper">
+                <input type="email" class="form-input" formControlName="email" placeholder="E-Mail">
+              </div>
+            </div>
+
+            <div class="form-row full-width">
+              <label class="form-label">LinkedIn</label>
+              <div class="input-wrapper">
+                <input type="url" class="form-input" formControlName="linkedIn" placeholder="LinkedIn Profile URL">
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn btn-save" [disabled]="!contactForm.valid || isSubmitting">
+        {{ isSubmitting ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+
+  </form>
+</div>

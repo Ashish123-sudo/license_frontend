@@ -1,0 +1,51 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <h1 class="page-title">{{ isEditMode ? 'Edit Application' : 'New Application' }}</h1>
+  </div>
+
+  <form [formGroup]="appForm" (ngSubmit)="onSubmit()" class="app-form">
+
+    <div class="form-row">
+      <label class="form-label">Application Name <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <input type="text" class="form-input" formControlName="appName" placeholder="e.g. LMS Portal">
+        <div class="field-error" *ngIf="appForm.get('appName')?.invalid && appForm.get('appName')?.touched">
+          Application name is required
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Product Owner <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <select class="form-input" formControlName="userId">
+          <option value="" disabled>Select an owner...</option>
+          @for (user of users; track user.userId) {
+            <option [value]="user.userId">{{ user.userName }}</option>
+          }
+        </select>
+        <div class="field-error" *ngIf="appForm.get('userId')?.invalid && appForm.get('userId')?.touched">
+          Product owner is required
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Availability</label>
+      <div class="input-wrapper checkbox-wrap">
+        <input type="checkbox" id="isActive" formControlName="isActive">
+        <label for="isActive" class="checkbox-label">Application is active and available for licensing</label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-save" [disabled]="!appForm.valid || isSubmitting">
+        {{ isSubmitting ? 'Saving...' : 'Save Application' }}
+      </button>
+      <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+    </div>
+
+  </form>
+
+</div>

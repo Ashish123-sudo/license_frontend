@@ -1,0 +1,16 @@
+<div class="app-wrapper">
+  <!-- Header stays at the very top -->
+  <app-header (toggleSidenav)="sidebarOpen = !sidebarOpen"></app-header>
+
+  <mat-sidenav-container class="main-container">
+    <!-- Sidebar -->
+    <mat-sidenav mode="side" [opened]="sidebarOpen" class="quote-sidebar">
+      <app-sidenav [sidebarOpen]="sidebarOpen"></app-sidenav>
+    </mat-sidenav>
+
+    <!-- Content -->
+    <mat-sidenav-content class="content-area">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

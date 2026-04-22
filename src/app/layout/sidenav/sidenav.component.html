@@ -1,0 +1,47 @@
+<nav class="sidebar-nav">
+  <div class="menu-group" *ngFor="let item of navItems">
+
+    <a *ngIf="item.isDirect"
+       [routerLink]="item.route"
+       class="nav-item"
+       routerLinkActive="nav-active">
+      <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+      <span class="nav-text">{{ item.label }}</span>
+    </a>
+
+    <ng-container *ngIf="!item.isDirect">
+      <div class="nav-section-header" (click)="toggleGroup(item)">
+        <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+        <span class="nav-text">{{ item.label }}</span>
+        <mat-icon class="arrow" [class.rotate]="item.expanded">expand_more</mat-icon>
+      </div>
+
+      <!-- UPDATED BLOCK -->
+      <div class="submenu-container" [class.open]="item.expanded">
+        <ng-container *ngFor="let child of item.children">
+          <div *ngIf="hasAccess(child)" class="nav-child-wrapper">
+            <a class="nav-child-item"
+               [routerLink]="child.route"
+               routerLinkActive="nav-active">
+              <span class="nav-text">{{ child.label }}</span>
+            </a>
+            <button *ngIf="child.addRoute"
+                    class="child-add-btn"
+                    (click)="navigateTo(child.addRoute)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </ng-container>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+  <div class="sidebar-footer">
+    <a class="nav-item logout-item" (click)="logout()">
+      <mat-icon class="nav-icon">logout</mat-icon>
+      <span class="nav-text">Logout</span>
+    </a>
+  </div>
+</nav>

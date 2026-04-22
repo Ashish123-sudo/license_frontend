@@ -1,0 +1,111 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2 class="page-title">{{ isEditMode ? 'Edit Organization' : 'New Organization' }}</h2>
+  </div>
+
+  <form [formGroup]="orgForm" (ngSubmit)="onSubmit()" class="org-form">
+
+    <div class="section-title">ORGANIZATION DETAILS</div>
+    <div class="section-group">
+      <div class="fields-grid">
+
+        <!-- Org Code shown readonly in edit mode only -->
+        <div class="form-field form-field--full" *ngIf="isEditMode">
+          <label class="form-label">Org Code</label>
+          <input type="text" class="form-input form-input--readonly"
+                 [value]="orgCodeDisplay" readonly>
+        </div>
+
+        <div class="form-field form-field--full">
+          <label class="form-label">Organization Name <span class="required">*</span></label>
+          <input type="text" class="form-input" formControlName="orgName" placeholder="Organization Name">
+          <div class="field-error" *ngIf="orgForm.get('orgName')?.invalid && orgForm.get('orgName')?.touched">
+            Organization name is required
+          </div>
+        </div>
+
+        <div class="form-field form-field--full">
+          <label class="form-label">Industry</label>
+          <input type="text" class="form-input" formControlName="industry" placeholder="e.g. Technology">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Phone</label>
+          <input type="tel" class="form-input" formControlName="phone" placeholder="Phone Number">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" formControlName="email" placeholder="Email">
+          <div class="field-error" *ngIf="orgForm.get('email')?.invalid && orgForm.get('email')?.touched">
+            Please enter a valid email
+          </div>
+        </div>
+
+        <div class="form-field form-field--full">
+          <label class="form-label">Website</label>
+          <input type="url" class="form-input" formControlName="website" placeholder="https://example.com">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-title">ADDRESS</div>
+    <div class="section-group">
+      <div class="fields-grid">
+
+        <div class="form-field form-field--full">
+          <label class="form-label">Address Line 1</label>
+          <input type="text" class="form-input" formControlName="address1" placeholder="Address Line 1">
+        </div>
+
+        <div class="form-field form-field--full">
+          <label class="form-label">Address Line 2</label>
+          <input type="text" class="form-input" formControlName="address2" placeholder="Address Line 2">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" formControlName="city" placeholder="City">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">State</label>
+          <input type="text" class="form-input" formControlName="state" placeholder="State">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Postal Code</label>
+          <input type="text" class="form-input" formControlName="postalCode" placeholder="Postal Code">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-input" formControlName="country" placeholder="Country">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-title">ADDITIONAL INFO</div>
+    <div class="section-group">
+      <div class="fields-grid">
+        <div class="form-field form-field--full">
+          <label class="form-label">Notes</label>
+          <textarea class="form-input form-textarea" formControlName="notes"
+                    placeholder="Additional notes"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="new-btn" [disabled]="!orgForm.valid || isSubmitting">
+        {{ isSubmitting ? 'Saving...' : 'Save' }}
+      </button>
+      <button type="button" class="cancel-btn" (click)="onCancel()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+</div>

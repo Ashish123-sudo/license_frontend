@@ -1,0 +1,139 @@
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.list-title {
+  font-size: 22px;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+
+  .title-arrow {
+    font-size: 20px;
+    color: #3b82f6;
+    vertical-align: middle;
+  }
+}
+
+.new-btn {
+  background: #3b82f6 !important;
+  color: white !important;
+  border-radius: 4px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  width: 36px !important;
+  padding: 0 !important;
+
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    margin: 0;
+  }
+}
+
+.table-wrap {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.roles-table {
+  width: 100%;
+
+  .mat-mdc-header-row {
+    background: #f8f9fa;
+    height: 44px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+    padding: 0 16px;
+    border-bottom: none;
+
+    &:first-child { padding-left: 20px; }
+  }
+
+  .mat-mdc-row {
+    height: 48px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:hover { background: #f5f8ff; }
+  }
+
+  .mat-mdc-cell {
+    font-size: 13px;
+    color: #374151;
+    padding: 0 16px;
+
+    &:first-child { padding-left: 20px; }
+  }
+}
+
+.name-link {
+  color: #3b82f6;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
+}
+
+.secondary-text {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.badge-active {
+  background: #e6fffa;
+  color: #2c7a7b;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #b2f5ea;
+}
+
+.badge-inactive {
+  background: #fff5f5;
+  color: #c53030;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #feb2b2;
+}
+
+.actions-cell {
+  text-align: right;
+  padding-right: 16px !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #d1d5db;
+  }
+}

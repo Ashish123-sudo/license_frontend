@@ -1,0 +1,246 @@
+<div class="list-page">
+
+  <div class="list-panel" [class.shrink]="selectedOrg">
+
+    <div class="list-header">
+      <h2 class="list-title">
+        Organizations
+        <mat-icon class="title-arrow">arrow_drop_down</mat-icon>
+      </h2>
+      <button mat-flat-button class="new-btn" (click)="navigateToCreate()" matTooltip="Add Organization">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text"
+             placeholder="Search organizations..."
+             [(ngModel)]="searchTerm"
+             (ngModelChange)="onSearch($event)"
+             class="search-input">
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" matSort class="orgs-table">
+
+        <ng-container matColumnDef="orgName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ORGANIZATION</th>
+          <td mat-cell *matCellDef="let org">
+            <div class="org-cell">
+              <span class="org-avatar">{{ org.orgName[0] }}</span>
+              <span class="name-link" (click)="selectOrg(org); $event.stopPropagation()">
+                {{ org.orgName }}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="orgCode">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ORG CODE</th>
+          <td mat-cell *matCellDef="let org">{{ org.orgCode }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>EMAIL</th>
+          <td mat-cell *matCellDef="let org">{{ org.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>STATUS</th>
+          <td mat-cell *matCellDef="let org">
+            <span [class]="org.isActive ? 'badge-active' : 'badge-inactive'">
+              {{ org.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+            class="table-row"
+            [class.selected-row]="selectedOrg?.orgId === row.orgId"
+            (click)="selectOrg(row)">
+        </tr>
+      </table>
+
+      <div *ngIf="loading" class="loading-state">
+        <mat-spinner diameter="32"></mat-spinner>
+        <span>Fetching organizations...</span>
+      </div>
+
+      <div *ngIf="!loading && dataSource.data.length === 0" class="empty-list-state">
+        <mat-icon>business_off</mat-icon>
+        <p>No organizations found.</p>
+      </div>
+    </div>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)"
+      class="list-paginator">
+    </mat-paginator>
+
+  </div>
+
+  <div class="detail-panel" *ngIf="selectedOrg">
+
+    <div class="detail-header">
+      <button class="detail-back-btn" mat-icon-button (click)="closeDetail()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h3 class="detail-name">{{ selectedOrg.orgName }}</h3>
+
+      <div class="detail-actions">
+        <button mat-icon-button [matMenuTriggerFor]="itemMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #itemMenu="matMenu">
+          <button mat-menu-item (click)="navigateToEdit(selectedOrg)">
+            <mat-icon>edit</mat-icon> Edit
+          </button>
+          <button mat-menu-item (click)="toggleActive(selectedOrg)">
+            <mat-icon>{{ selectedOrg.isActive ? 'block' : 'check_circle' }}</mat-icon>
+            {{ selectedOrg.isActive ? 'Deactivate' : 'Activate' }}
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item class="text-danger" (click)="confirmDelete(selectedOrg)">
+            <mat-icon color="warn">delete</mat-icon> Delete
+          </button>
+        </mat-menu>
+
+        <button class="detail-close-btn" mat-icon-button (click)="closeDetail()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-tabs">
+      <button class="detail-tab"
+              [class.active]="activeTab === 'overview'"
+              (click)="activeTab = 'overview'">Overview</button>
+      <button class="detail-tab"
+              [class.active]="activeTab === 'contacts'"
+              (click)="activeTab = 'contacts'">Contacts</button>
+    </div>
+
+    <div class="detail-body">
+
+  @if (activeTab === 'overview') {
+    <div class="contact-card">
+      <div class="contact-avatar">
+        <mat-icon>business</mat-icon>
+      </div>
+      <div class="contact-info">
+        <div class="contact-name">{{ selectedOrg.orgName }}</div>
+        <div class="contact-detail" *ngIf="selectedOrg.email">
+          <mat-icon class="detail-icon">email</mat-icon> {{ selectedOrg.email }}
+        </div>
+        <div class="contact-detail" *ngIf="selectedOrg.phone">
+          <mat-icon class="detail-icon">phone</mat-icon> {{ selectedOrg.phone }}
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="section-title">ORGANIZATION DETAILS</div>
+
+      <div class="section-row">
+        <span class="section-label">Org Code</span>
+        <span class="section-value code-value">{{ selectedOrg.orgCode }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.industry">
+        <span class="section-label">Industry</span>
+        <span class="section-value">{{ selectedOrg.industry }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.website">
+        <span class="section-label">Website</span>
+        <span class="section-value">
+          <a [href]="selectedOrg.website" target="_blank" class="name-link">{{ selectedOrg.website }}</a>
+        </span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.address1">
+        <span class="section-label">Address 1</span>
+        <span class="section-value">{{ selectedOrg.address1 }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.address2">
+        <span class="section-label">Address 2</span>
+        <span class="section-value">{{ selectedOrg.address2 }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.city ">
+        <span class="section-label">City</span>
+        <span class="section-value">
+          <ng-container *ngIf="selectedOrg.city">{{ selectedOrg.city }}</ng-container>
+        </span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.state">
+        <span class="section-label">State</span>
+        <span class="section-value">{{ selectedOrg.state }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.postalCode">
+        <span class="section-label">Postal code</span>
+        <span class="section-value">{{ selectedOrg.postalCode }}</span>
+      </div>
+
+      <div class="section-row" *ngIf="selectedOrg.country">
+        <span class="section-label">Country</span>
+        <span class="section-value">{{ selectedOrg.country }}</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="section-title">STATUS</div>
+      <div class="section-row">
+        <span class="section-label">Status</span>
+        <span [class]="selectedOrg.isActive ? 'badge-active' : 'badge-inactive'">
+          {{ selectedOrg.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+  }
+
+  @if (activeTab === 'contacts') {
+      <div style="display: flex; justify-content: flex-end; padding: 8px 0 12px 0;">
+        <button class="new-btn" mat-flat-button (click)="navigateToCreateContact(selectedOrg!)">
+          <mat-icon>person_add</mat-icon>
+        </button>
+      </div>
+
+      <div *ngIf="contacts.length === 0" class="empty-state">
+        <mat-icon>person_search</mat-icon>
+        <p>No contacts assigned to this organization.</p>
+      </div>
+
+      <div *ngIf="contacts.length > 0">
+        <div class="contact-card" *ngFor="let contact of contacts">
+          <div class="contact-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">{{ contact.firstName }} {{ contact.lastName }}</div>
+            <div class="contact-detail" *ngIf="contact.designation">
+              <mat-icon class="detail-icon">work</mat-icon> {{ contact.designation }}
+            </div>
+            <div class="contact-detail" *ngIf="contact.email">
+              <mat-icon class="detail-icon">email</mat-icon> {{ contact.email }}
+            </div>
+            <div class="contact-detail" *ngIf="contact.mobile">
+              <mat-icon class="detail-icon">phone</mat-icon> {{ contact.mobile }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    }
+
+    </div>
+  </div>
+</div>

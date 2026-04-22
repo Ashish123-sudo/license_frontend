@@ -1,0 +1,26 @@
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-container {
+  flex: 1;
+}
+
+.quote-sidebar {
+  width: 240px;
+  border-right: 1px solid #e2e8f0;
+  transition: width 0.25s ease;
+  overflow: hidden;
+
+  &.collapsed {
+    width: 0;
+    border-right: none;
+  }
+}
+
+.content-area {
+  background-color: #f1f5f9;
+  padding: 0;
+}

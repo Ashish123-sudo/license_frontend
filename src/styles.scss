@@ -1,1 +1,97 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+/* ================= MATERIAL ================= */
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$blue-palette,
+    tertiary: mat.$green-palette,
+  ),
+  density: (
+    scale: 0
+  )
+));
+
+@include mat.all-component-themes($theme);
+
+/* ================= DESIGN TOKENS ================= */
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1967d2;
+  --color-primary-bg: #eff6ff;
+
+  --color-bg-app: #f3f4f6;
+  --color-bg-surface: #ffffff;
+  --color-toolbar-bg: #1f2937;
+  --color-sidebar-bg: #f0f2f9;
+  --color-sidebar-active: #e8f0fe;
+
+  --color-text-heading: #1a1a1a;
+  --color-text-body: #374151;
+  --color-text-muted: #6b7280;
+
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.08);
+
+  --toolbar-height: 56px;
+  --sidebar-width: 240px; /* Fixed to one value */
+}
+
+/* ================= RESET ================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background: var(--color-bg-app);
+  color: var(--color-text-body);
+}
+
+/* ================= APP LAYOUT ================= */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Crucial: Ensure the container background matches the app background */
+mat-sidenav-container {
+  flex: 1;
+  background: var(--color-bg-app) !important;
+}
+
+mat-sidenav {
+  width: var(--sidebar-width) !important;
+  background: var(--color-sidebar-bg) !important;
+  border-right: 1px solid #dde1ef;
+  box-shadow: none !important; /* Removes the Material shadow gap */
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Material calculates margin automatically; we ensure no extra padding here */
+  padding: 0; 
+}
+
+/* ================= PAGE CONTENT ================= */
+.page-content {
+  padding: var(--space-lg);
+  background: var(--color-bg-app);
+  flex: 1;
+  overflow: auto;
+}
+
+/* ... keep your existing .nav-item, mat-card, and table styles below ... */

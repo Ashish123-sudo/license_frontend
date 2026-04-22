@@ -1,0 +1,54 @@
+<div class="list-header">
+  <h2 class="list-title">
+    License Types
+    <mat-icon class="title-arrow">arrow_drop_down</mat-icon>
+  </h2>
+  <button mat-flat-button class="new-btn" routerLink="new" matTooltip="Add License Type">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<div class="table-wrap">
+  <table mat-table [dataSource]="licenseTypes" class="licenses-table">
+
+    <ng-container matColumnDef="application">
+      <th mat-header-cell *matHeaderCellDef>APPLICATION</th>
+      <td mat-cell *matCellDef="let lic">
+        <span class="name-link">{{ lic.application?.appName }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="plan">
+      <th mat-header-cell *matHeaderCellDef>PLAN</th>
+      <td mat-cell *matCellDef="let lic">{{ lic.pricingPlan }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="limit">
+      <th mat-header-cell *matHeaderCellDef>LIMIT</th>
+      <td mat-cell *matCellDef="let lic">{{ lic.pricingLimit }} {{ lic.limitUom }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let lic" class="actions-cell">
+        <button mat-icon-button (click)="editLicenseType(lic.licenseTypeId)" matTooltip="Edit">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="deleteLicenseType(lic.licenseTypeId)" matTooltip="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+  </table>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading license types...</p>
+  </div>
+
+  <div *ngIf="!isLoading && licenseTypes.length === 0" class="empty-state">
+    <p>No license types found.</p>
+  </div>
+</div>
