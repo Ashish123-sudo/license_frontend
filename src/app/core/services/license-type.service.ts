@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
 export interface LicenseType {
   licenseTypeId?: string;
   application?:   { appId: string; appName?: string }; // ✅ nested
@@ -21,7 +21,7 @@ export type CreateLicenseTypePayload = {
 @Injectable({ providedIn: 'root' })
 export class LicenseTypeService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/license-types'; // ✅ real URL
+  private apiUrl = `${environment.apiUrl}/license-types`;
 
   getLicenseTypes(): Observable<LicenseType[]> {
     return this.http.get<LicenseType[]>(this.apiUrl); // ✅ real API call

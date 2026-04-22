@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
 export interface Organization {
   orgId:        string;
   orgName:      string;
@@ -33,7 +33,7 @@ export interface OrgListResponse {
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
   private http = inject(HttpClient);
-  private base = 'http://localhost:8080/api/v1/organizations';
+  private base = `${environment.apiUrl}/v1/organizations`;
 
   // Backend returns a plain array, we wrap it to match the paginated interface
   getAll(page = 0, size = 10, search = ''): Observable<OrgListResponse> {

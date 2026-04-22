@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
 export interface Contact {
   contactId?:       string;
   organization?:    { orgId: string; orgName?: string };
@@ -21,7 +21,7 @@ export interface Contact {
 @Injectable({ providedIn: 'root' })
 export class ContactService {
   private http = inject(HttpClient);
-  private base = 'http://localhost:8080/api/v1/organization-contacts';
+  private base = `${environment.apiUrl}/v1/organization-contacts`;
 
   getAll(): Observable<Contact[]> {
     return this.http.get<Contact[]>(this.base);

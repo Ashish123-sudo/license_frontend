@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../../environments/environment';
 export interface CustomerLicense {
   customerLicenseId?: string;
   application?:       { appId: string; appName?: string };
@@ -22,7 +22,7 @@ export type CreateCustomerLicensePayload = {
 @Injectable({ providedIn: 'root' })
 export class CustomerLicenseService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/customer-licenses';
+  private apiUrl = `${environment.apiUrl}/customer-licenses`;
 
   getCustomerLicenses(): Observable<CustomerLicense[]> {
     return this.http.get<CustomerLicense[]>(this.apiUrl);
