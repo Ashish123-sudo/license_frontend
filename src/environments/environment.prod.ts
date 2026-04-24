@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://licensebackend-rfg18trw.b4a.run/api'
+  apiUrl: 'https://license-management-backend-3ycx.onrender.com/api'
 };
