@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router'; // ✅
+import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerLicenseService, CreateCustomerLicensePayload } from '../../../core/services/customer-license.service';
 import { ApplicationService } from '../../../core/services/application.service';
 import { OrganizationService } from '../../../core/services/organization.service';
 import { LicenseTypeService } from '../../../core/services/license-type.service';
-import { forkJoin } from 'rxjs'; // ✅
+import { AuthService } from '../../../core/services/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-customer-license-form',
@@ -18,24 +19,24 @@ import { forkJoin } from 'rxjs'; // ✅
 export class CustomerLicenseFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private route = inject(ActivatedRoute); // ✅
+  private route = inject(ActivatedRoute);
   private appService = inject(ApplicationService);
   private orgService = inject(OrganizationService);
   private typeService = inject(LicenseTypeService);
   private licenseService = inject(CustomerLicenseService);
+  private authService = inject(AuthService); // ← add
 
   customerForm!: FormGroup;
   organizations: any[] = [];
   applications: any[] = [];
   allLicenseTypes: any[] = [];
   filteredTypes: any[] = [];
-  isEditMode = false;           // ✅
-  licenseId: string | null = null; // ✅
+  isEditMode = false;
+  licenseId: string | null = null;
 
   ngOnInit() {
-    this.licenseId = this.route.snapshot.paramMap.get('id'); // ✅
+    this.licenseId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.licenseId;
-
     this.initForm();
     this.loadData();
   }
@@ -51,17 +52,24 @@ export class CustomerLicenseFormComponent implements OnInit {
   }
 
   private loadData() {
-    // ✅ Load all dropdowns in parallel
-    forkJoin({
-      orgs: this.orgService.getOrganizations(),
-      apps: this.appService.getApplications(),
-      types: this.typeService.getLicenseTypes()
-    }).subscribe(({ orgs, apps, types }) => {
+    // ← use role-based app fetch
+    const apps$ = this.authService.isProductAdmin()
+      ? this.appService.getMyApps()
+      : this.appService.getApplications();
+
+    const types$ = this.authService.isProductAdmin()
+      ? this.typeService.getMyTypes()      // PRODUCT_ADMIN → only their types
+      : this.typeService.getLicenseTypes(); // LMS_ADMIN → all types
+
+      forkJoin({
+        orgs: this.orgService.getOrganizations(),
+        apps: apps$,
+        types: types$ // ← now role-aware
+      }).subscribe(({ orgs, apps, types }) => {
       this.organizations = orgs;
       this.applications = apps;
       this.allLicenseTypes = types;
 
-      // ✅ If edit mode, load existing record and patch form
       if (this.isEditMode && this.licenseId) {
         this.licenseService.getById(this.licenseId).subscribe({
           next: (cl) => {
@@ -73,7 +81,6 @@ export class CustomerLicenseFormComponent implements OnInit {
               licenseCount:  cl.licenseCount,
               isActive:      cl.isActive
             });
-            // ✅ Filter license types for the pre-selected app
             this.filteredTypes = this.allLicenseTypes.filter(
               t => t.application?.appId === appId
             );
@@ -109,13 +116,11 @@ export class CustomerLicenseFormComponent implements OnInit {
     };
 
     if (this.isEditMode && this.licenseId) {
-      // ✅ Update
-     this.licenseService.update(this.licenseId, payload).subscribe({
+      this.licenseService.update(this.licenseId, payload).subscribe({
         next: () => this.router.navigate(['/licenses/assignments']),
         error: (err: any) => console.error('Error updating:', err)
       });
     } else {
-      // ✅ Create
       this.licenseService.createCustomerLicense(payload).subscribe({
         next: () => this.router.navigate(['/licenses/assignments']),
         error: (err: any) => console.error('Error creating:', err)

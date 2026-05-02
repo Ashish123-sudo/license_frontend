@@ -28,7 +28,11 @@ export class ApplicationService {
   getById(id: string): Observable<Application> {
     return this.http.get<Application>(`${this.apiUrl}/${id}`);
   }
-
+  
+  getMyApps(): Observable<Application[]> {
+    return this.http.get<Application[]>(`${environment.apiUrl}/applications/my-apps`);
+  }
+  
   create(payload: CreateApplicationPayload): Observable<Application> {
     return this.http.post<Application>(this.apiUrl, payload);
   }

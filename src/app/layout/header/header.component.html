@@ -8,14 +8,110 @@
   </div>
 
   <div class="header-center">
-    <div class="search-box">
-      <div class="search-filter">
-        <span>All</span>
-        <mat-icon>arrow_drop_down</mat-icon>
+    <div class="search-wrapper">
+      <div class="search-box" [class.active]="showDropdown()">
+        <div class="search-filter" [matMenuTriggerFor]="filterMenu">
+          <span>{{ currentFilterLabel }}</span>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </div>
+        <span class="search-divider">|</span>
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          placeholder="Search..."
+          [value]="query()"
+          (input)="onQueryChange($any($event.target).value)"
+        />
       </div>
-      <span class="search-divider">|</span>
-      <mat-icon class="search-icon">search</mat-icon>
-      <input type="text" placeholder="Search...">
+
+      @if (showDropdown()) {
+        <div class="search-dropdown">
+
+          @if (results().length === 0) {
+            <div class="dropdown-empty-all">
+              <mat-icon>search_off</mat-icon>
+              <span>No results found for "{{ query() }}"</span>
+            </div>
+          } @else {
+
+            @if (groupedResults.applications.length && (filter() === 'ALL' || filter() === 'APPLICATION')) {
+              <div class="dropdown-group">
+                <p class="dropdown-label">Applications</p>
+                @for (r of groupedResults.applications; track r.id) {
+                  <div class="dropdown-item" (mousedown)="navigateTo(r)">
+                    <mat-icon>apps</mat-icon>
+                    <div class="item-text">
+                      <span class="item-title">{{ r.title }}</span>
+                      <span class="item-sub">{{ r.subtitle }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (groupedResults.licenseTypes.length && (filter() === 'ALL' || filter() === 'LICENSE_TYPE')) {
+              <div class="dropdown-group">
+                <p class="dropdown-label">License Types</p>
+                @for (r of groupedResults.licenseTypes; track r.id) {
+                  <div class="dropdown-item" (mousedown)="navigateTo(r)">
+                    <mat-icon>card_membership</mat-icon>
+                    <div class="item-text">
+                      <span class="item-title">{{ r.title }}</span>
+                      <span class="item-sub">{{ r.subtitle }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (groupedResults.organizations.length && (filter() === 'ALL' || filter() === 'ORGANIZATION')) {
+              <div class="dropdown-group">
+                <p class="dropdown-label">Organizations</p>
+                @for (r of groupedResults.organizations; track r.id) {
+                  <div class="dropdown-item" (mousedown)="navigateTo(r)">
+                    <mat-icon>business</mat-icon>
+                    <div class="item-text">
+                      <span class="item-title">{{ r.title }}</span>
+                      <span class="item-sub">{{ r.subtitle }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (groupedResults.contacts.length && (filter() === 'ALL' || filter() === 'CONTACT')) {
+              <div class="dropdown-group">
+                <p class="dropdown-label">Contacts</p>
+                @for (r of groupedResults.contacts; track r.id) {
+                  <div class="dropdown-item" (mousedown)="navigateTo(r)">
+                    <mat-icon>person</mat-icon>
+                    <div class="item-text">
+                      <span class="item-title">{{ r.title }}</span>
+                      <span class="item-sub">{{ r.subtitle }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (groupedResults.customerLicenses.length && (filter() === 'ALL' || filter() === 'CUSTOMER_LICENSE')) {
+              <div class="dropdown-group">
+                <p class="dropdown-label">Customer Licenses</p>
+                @for (r of groupedResults.customerLicenses; track r.id) {
+                  <div class="dropdown-item" (mousedown)="navigateTo(r)">
+                    <mat-icon>receipt_long</mat-icon>
+                    <div class="item-text">
+                      <span class="item-title">{{ r.title }}</span>
+                      <span class="item-sub">{{ r.subtitle }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+          }
+        </div>
+      }
     </div>
   </div>
 
@@ -25,13 +121,26 @@
     </div>
   </div>
 
+  <mat-menu #filterMenu="matMenu" class="filter-menu-panel" yPosition="below" [overlapTrigger]="false">
+    @for (f of filters; track f.value) {
+        <button mat-menu-item (click)="onFilterChange(f.value)">
+        <div class="filter-item">
+          <span>{{ f.label }}</span>
+          @if (filter() === f.value) {
+            <mat-icon class="check-icon">check</mat-icon>
+          }
+        </div>
+      </button>
+    }
+  </mat-menu>
+
   <mat-menu #userMenu="matMenu" xPosition="before">
     <div class="user-menu-info">
       <p class="name">{{ auth.currentUser()?.fullName }}</p>
       <p class="role">{{ auth.currentUser()?.roleName }}</p>
     </div>
     <mat-divider></mat-divider>
-    <button mat-menu-item (click)="logout()">
+    <button mat-menu-item class="menu-danger" (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </button>

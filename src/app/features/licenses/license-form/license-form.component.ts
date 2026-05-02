@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { ApplicationService } from '../../../core/services/application.service';
 import { LicenseTypeService, CreateLicenseTypePayload } from '../../../core/services/license-type.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-license-form',
@@ -15,17 +16,18 @@ import { LicenseTypeService, CreateLicenseTypePayload } from '../../../core/serv
 export class LicenseFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private route = inject(ActivatedRoute); // ✅
+  private route = inject(ActivatedRoute);
   private appService = inject(ApplicationService);
   private licenseTypeService = inject(LicenseTypeService);
+  private authService = inject(AuthService); // ← add
 
   licenseForm!: FormGroup;
   applications: any[] = [];
-  isEditMode = false;        // ✅
-  licenseTypeId: string | null = null; // ✅
+  isEditMode = false;
+  licenseTypeId: string | null = null;
 
   ngOnInit() {
-    this.licenseTypeId = this.route.snapshot.paramMap.get('id'); // ✅
+    this.licenseTypeId = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.licenseTypeId;
 
     this.licenseForm = this.fb.group({
@@ -36,8 +38,12 @@ export class LicenseFormComponent implements OnInit {
       limitFrequency: [30, Validators.required]
     });
 
-    // Load apps first, then patch form in edit mode
-    this.appService.getApplications().subscribe(data => {
+    // ← use role-based app fetch
+    const apps$ = this.authService.isProductAdmin()
+      ? this.appService.getMyApps()
+      : this.appService.getApplications();
+
+    apps$.subscribe(data => {
       this.applications = data;
 
       if (this.isEditMode && this.licenseTypeId) {
@@ -61,7 +67,6 @@ export class LicenseFormComponent implements OnInit {
     if (this.licenseForm.invalid) return;
 
     const { appId, pricingPlan, pricingLimit, limitUom, limitFrequency } = this.licenseForm.getRawValue();
-
     const payload: CreateLicenseTypePayload = {
       application: { appId },
       pricingPlan,
@@ -71,13 +76,11 @@ export class LicenseFormComponent implements OnInit {
     };
 
     if (this.isEditMode && this.licenseTypeId) {
-      // ✅ Update existing
       this.licenseTypeService.update(this.licenseTypeId, payload).subscribe({
         next: () => this.router.navigate(['/licenses/types']),
         error: (err) => console.error('Error updating license type:', err)
       });
     } else {
-      // ✅ Create new
       this.licenseTypeService.saveLicenseType(payload).subscribe({
         next: () => this.router.navigate(['/licenses/types']),
         error: (err) => console.error('Error saving license type:', err)

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
 export interface CustomerLicense {
   customerLicenseId?: string;
   application?:       { appId: string; appName?: string };
@@ -28,6 +29,11 @@ export class CustomerLicenseService {
     return this.http.get<CustomerLicense[]>(this.apiUrl);
   }
 
+  // ← new: for PRODUCT_ADMIN
+  getMyLicenses(): Observable<CustomerLicense[]> {
+    return this.http.get<CustomerLicense[]>(`${this.apiUrl}/my-licenses`);
+  }
+
   getById(id: string): Observable<CustomerLicense> {
     return this.http.get<CustomerLicense>(`${this.apiUrl}/${id}`);
   }
@@ -37,7 +43,6 @@ export class CustomerLicenseService {
   }
 
   update(id: string, payload: Partial<CreateCustomerLicensePayload>): Observable<CustomerLicense> {
-    
     return this.http.put<CustomerLicense>(`${this.apiUrl}/${id}`, payload);
   }
 

@@ -3,11 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 export interface User {
+  userId: string;       // ← add this
   fullName: string;
   roleName: string;
   permissions: string[];
+  assignedAppIds: string[] | null;
 }
 
 export interface LoginResponse {
@@ -21,36 +24,11 @@ export interface LoginResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private _currentUser = signal<User | null>(this.loadUser());
-
+  private router = inject(Router);
   readonly currentUser = this._currentUser;
   readonly isLoggedIn = computed(() => this._currentUser() !== null);
 
   login(username: string, password: string): Observable<LoginResponse> {
-
-    // ✅ HARDCODED ADMIN LOGIN
-    if (username === 'admin' && password === 'admin123') {
-      const mockResponse: LoginResponse = {
-        token: 'mock-token-123',
-        user: {
-          fullName: 'Admin User',
-          roleName: 'PRODUCT_ADMIN',
-          permissions: [
-            'VIEW_USERS',
-            'VIEW_ROLES',
-            'VIEW_LICENSES'
-          ]
-        }
-      };
-
-      return new Observable((observer) => {
-        localStorage.setItem('token', mockResponse.token);
-        localStorage.setItem('user', JSON.stringify(mockResponse.user));
-        this._currentUser.set(mockResponse.user);
-
-        observer.next(mockResponse);
-        observer.complete();
-      });
-    }
 
     // ✅ REAL API CALL
     return this.http
@@ -64,10 +42,11 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+    logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this._currentUser.set(null);
+    this.router.navigate(['/auth']); // ← force navigation here
   }
 
   hasRole(role: string): boolean {
@@ -80,6 +59,18 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  isLmsAdmin(): boolean {
+    return this._currentUser()?.roleName === 'LMS_ADMIN';
+  }
+
+  isProductAdmin(): boolean {
+    return this._currentUser()?.roleName === 'PRODUCT_ADMIN';
+  }
+
+  getAssignedAppIds(): string[] {
+    return this._currentUser()?.assignedAppIds ?? [];
   }
 
   private loadUser(): User | null {

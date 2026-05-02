@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -11,9 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/shell/shell.component').then(m => m.ShellComponent),
     canActivate: [authGuard],
     children: [
-      // --- ORGANIZATIONS ---
+
+      // --- ORGANIZATIONS --- 🔒 LMS_ADMIN ONLY
       {
         path: 'organizations',
+        canActivate: [roleGuard(['LMS_ADMIN'])],
         children: [
           {
             path: '',
@@ -30,7 +33,7 @@ export const routes: Routes = [
         ]
       },
 
-      // --- APPLICATIONS ---
+      // --- APPLICATIONS --- ✅ BOTH ROLES
       {
         path: 'applications',
         children: [
@@ -46,13 +49,13 @@ export const routes: Routes = [
             path: ':id/edit',
             loadComponent: () => import('./features/applications/app-form/app-form.component').then(m => m.AppFormComponent)
           }
-
         ]
       },
 
-      // --- CONTACTS ---
+      // --- CONTACTS --- 🔒 LMS_ADMIN ONLY
       {
         path: 'contacts',
+        canActivate: [roleGuard(['LMS_ADMIN'])],
         children: [
           {
             path: '',
@@ -69,9 +72,10 @@ export const routes: Routes = [
         ]
       },
 
-      // --- ROLES ---
+      // --- ROLES --- 🔒 LMS_ADMIN ONLY
       {
         path: 'roles',
+        canActivate: [roleGuard(['LMS_ADMIN'])],
         children: [
           {
             path: '',
@@ -88,9 +92,10 @@ export const routes: Routes = [
         ]
       },
 
-      // --- USERS ---
+      // --- USERS --- 🔒 LMS_ADMIN ONLY
       {
         path: 'users',
+        canActivate: [roleGuard(['LMS_ADMIN'])],
         children: [
           {
             path: '',
@@ -107,11 +112,10 @@ export const routes: Routes = [
         ]
       },
 
-      // --- LICENSE MANAGEMENT ---
+      // --- LICENSE MANAGEMENT --- ✅ BOTH ROLES
       {
         path: 'licenses',
         children: [
-          // 1. License Type Routes (Pricing Plan Definitions)
           {
             path: 'types',
             children: [
@@ -129,7 +133,6 @@ export const routes: Routes = [
               }
             ]
           },
-          // 2. Customer Assignment Routes (The "Sold" Licenses)
           {
             path: 'assignments',
             children: [
@@ -147,12 +150,16 @@ export const routes: Routes = [
               }
             ]
           },
-          // Default to the assignment list if just /licenses is accessed
           { path: '', redirectTo: 'assignments', pathMatch: 'full' }
         ]
       },
 
-      { path: '', redirectTo: 'organizations', pathMatch: 'full' },
+      // Default redirect — PRODUCT_ADMIN lands on /applications, LMS_ADMIN on /organizations
+      {
+        path: '',
+        redirectTo: 'applications',
+        pathMatch: 'full'
+      },
     ],
   },
   { path: '**', redirectTo: 'auth' },

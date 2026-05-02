@@ -13,7 +13,16 @@ export interface NavItem {
   route?: string;
   isDirect?: boolean;
   expanded?: boolean;
-  children?: { label: string; route: string; addRoute?: string; permission?: string }[];
+  roles?: string[]; // which roles can see this whole group
+  children?: NavChild[];
+}
+
+export interface NavChild {
+  label: string;
+  route: string;
+  addRoute?: string;
+  permission?: string;
+  roles?: string[]; // which roles can see this child
 }
 
 @Component({
@@ -38,35 +47,80 @@ export class SidenavComponent {
   @Output() closeSidenav = new EventEmitter<void>();
 
   navItems: NavItem[] = [
-  {
-    label: 'CRM',
-    icon: 'apartment',
-    expanded: true,
-    children: [
-      { label: 'Organizations', route: '/organizations', addRoute: '/organizations/new' },
-      { label: 'Contacts',      route: '/contacts',      addRoute: '/contacts/new' },
-      { label: 'Applications',  route: '/applications',  addRoute: '/applications/new' }
-    ]
-  },
-  {
-    label: 'Licenses',
-    icon: 'verified',
-    expanded: false,
-    children: [
-      { label: 'License Types',     route: '/licenses/types',       addRoute: '/licenses/types/new' },
-      { label: 'Customer Licenses', route: '/licenses/assignments', addRoute: '/licenses/assignments/new' }
-    ]
-  },
-  {
-    label: 'Settings',
-    icon: 'settings',
-    expanded: false,
-    children: [
-      { label: 'Product Users', route: '/users', addRoute: '/users/new' },
-      { label: 'Product Roles', route: '/roles', addRoute: '/roles/new' }
-    ]
+    {
+      label: 'CRM',
+      icon: 'apartment',
+      expanded: true,
+      children: [
+        {
+          label: 'Organizations',
+          route: '/organizations',
+          addRoute: '/organizations/new',
+          roles: ['LMS_ADMIN']               // PRODUCT_ADMIN cannot see this
+        },
+        {
+          label: 'Contacts',
+          route: '/contacts',
+          addRoute: '/contacts/new',
+          roles: ['LMS_ADMIN']               // PRODUCT_ADMIN cannot see this
+        },
+        {
+          label: 'Applications',
+          route: '/applications',
+          addRoute: '/applications/new'
+          // no roles restriction — both can see Applications
+        }
+      ]
+    },
+    {
+      label: 'Licenses',
+      icon: 'verified',
+      expanded: false,
+      children: [
+        {
+          label: 'License Types',
+          route: '/licenses/types',
+          addRoute: '/licenses/types/new'
+          // both roles can see
+        },
+        {
+          label: 'Customer Licenses',
+          route: '/licenses/assignments',
+          addRoute: '/licenses/assignments/new'
+          // both roles can see
+        }
+      ]
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      expanded: false,
+      roles: ['LMS_ADMIN'],                  // entire Settings group hidden from PRODUCT_ADMIN
+      children: [
+        { label: 'Product Users', route: '/users', addRoute: '/users/new' },
+        { label: 'Product Roles', route: '/roles', addRoute: '/roles/new' }
+      ]
+    }
+  ];
+
+  // Filter top-level nav groups by role
+  get visibleNavItems(): NavItem[] {
+    return this.navItems.filter(item => this.hasGroupAccess(item));
   }
-];
+
+  // Check if the whole group is visible
+  hasGroupAccess(item: NavItem): boolean {
+    if (!item.roles || item.roles.length === 0) return true;
+    const role = this.auth.currentUser()?.roleName;
+    return role ? item.roles.includes(role) : false;
+  }
+
+  // Check if a child item is visible
+  hasAccess(child: NavChild): boolean {
+    if (!child.roles || child.roles.length === 0) return true;
+    const role = this.auth.currentUser()?.roleName;
+    return role ? child.roles.includes(role) : false;
+  }
 
   toggleGroup(item: NavItem) {
     item.expanded = !item.expanded;
@@ -76,13 +130,8 @@ export class SidenavComponent {
     this.router.navigate([route]);
   }
 
-  hasAccess(item: any): boolean {
-    if (!item.permission) return true;
-    return this.auth.hasPermission(item.permission);
-  }
-
   logout() {
     this.auth.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth']);
   }
 }

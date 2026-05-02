@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApplicationService, Application } from '../../../core/services/application.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-app-list',
@@ -23,6 +24,7 @@ export class AppListComponent implements OnInit {
   private router = inject(Router);
   private snackbar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
+  private authService = inject(AuthService); 
 
   applications: Application[] = [];
   loading = false;
@@ -35,18 +37,41 @@ export class AppListComponent implements OnInit {
 
   loadApplications() {
     this.loading = true;
-    this.appService.getApplications().subscribe({
-      next: (data: Application[]) => {
-        this.applications = data;
+
+    if (this.authService.isProductAdmin()) {
+      // ← fetch assigned apps fresh from backend every time
+      const userId = this.authService.currentUser()?.userId;
+      if (!userId) {
         this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
-        this.snackbar.open('Failed to load applications', 'Close', { duration: 3000 });
+        return;
       }
-    });
+      this.appService.getMyApps().subscribe({
+        next: (data: Application[]) => {
+          this.applications = data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.detectChanges();
+          this.snackbar.open('Failed to load applications', 'Close', { duration: 3000 });
+        }
+      });
+    } else {
+      // LMS_ADMIN — fetch all
+      this.appService.getApplications().subscribe({
+        next: (data: Application[]) => {
+          this.applications = data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.detectChanges();
+          this.snackbar.open('Failed to load applications', 'Close', { duration: 3000 });
+        }
+      });
+    }
   }
 
   navigateToAdd() {

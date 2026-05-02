@@ -2,14 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
 export interface LicenseType {
   licenseTypeId?: string;
-  application?:   { appId: string; appName?: string }; // ✅ nested
+  application?:   { appId: string; appName?: string };
   pricingPlan:    string;
   pricingLimit:   number;
   limitUom:       string;
   limitFrequency: number;
 }
+
 export type CreateLicenseTypePayload = {
   application: { appId: string };
   pricingPlan:    string;
@@ -24,11 +26,16 @@ export class LicenseTypeService {
   private apiUrl = `${environment.apiUrl}/license-types`;
 
   getLicenseTypes(): Observable<LicenseType[]> {
-    return this.http.get<LicenseType[]>(this.apiUrl); // ✅ real API call
+    return this.http.get<LicenseType[]>(this.apiUrl);
+  }
+
+  // ← new: for PRODUCT_ADMIN
+  getMyTypes(): Observable<LicenseType[]> {
+    return this.http.get<LicenseType[]>(`${this.apiUrl}/my-types`);
   }
 
   saveLicenseType(payload: CreateLicenseTypePayload): Observable<LicenseType> {
-    return this.http.post<LicenseType>(this.apiUrl, payload); // ✅ renamed to match component
+    return this.http.post<LicenseType>(this.apiUrl, payload);
   }
 
   getById(id: string): Observable<LicenseType> {

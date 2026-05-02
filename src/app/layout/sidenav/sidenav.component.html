@@ -1,7 +1,7 @@
 <nav class="sidebar-nav">
-  <div class="menu-group" *ngFor="let item of navItems">
+  <div class="menu-group" *ngFor="let item of visibleNavItems"> 
 
-    <a *ngIf="item.isDirect"
+     <a *ngIf="item.isDirect"
        [routerLink]="item.route"
        class="nav-item"
        routerLinkActive="nav-active">
@@ -16,7 +16,6 @@
         <mat-icon class="arrow" [class.rotate]="item.expanded">expand_more</mat-icon>
       </div>
 
-      <!-- UPDATED BLOCK -->
       <div class="submenu-container" [class.open]="item.expanded">
         <ng-container *ngFor="let child of item.children">
           <div *ngIf="hasAccess(child)" class="nav-child-wrapper">
@@ -33,7 +32,6 @@
           </div>
         </ng-container>
       </div>
-
     </ng-container>
 
   </div>

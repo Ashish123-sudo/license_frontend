@@ -2,157 +2,113 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-   background: #ffffff;       
-  border-right: 1px solid #e8e8e8; 
-  padding: 8px 0;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px 8px;
+  gap: 4px;
 }
 
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px 9px 12px;
-  margin: 2px 8px;
-  text-decoration: none;
-  color: #374151; 
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover {
-    background: #f3f4f6;      // was rgba(255,255,255,0.08)
-    color: #111827; 
-  }
-
-  &.nav-active {
-    background: #eff6ff;      // was #3b82f6
-    color: #3b82f6;
-
-    .nav-icon { color: #3b82f6; }
-  }
+// Group Headers (Optional, adds clarity)
+.menu-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #9ca3af;
+  padding: 8px 12px 4px;
+  letter-spacing: 0.05em;
+  margin: 0;
 }
 
 .nav-section-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px 9px 16px;
-  margin: 2px 8px;
+  padding: 8px 12px;
   color: #374151;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s;
 
-  &:hover {
-     background: #f3f4f6;      // was rgba(255,255,255,0.08)
-    color: #111827;
-  }
+  &:hover { background: #f9fafb; color: #111827; }
 
-  .arrow {
-    margin-left: auto;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #9ca3af; 
+  .nav-icon { margin-right: 10px; color: #6b7280; }
+  .arrow { 
+    margin-left: auto; font-size: 18px; color: #9ca3af; 
     transition: transform 0.25s;
-
     &.rotate { transform: rotate(180deg); }
   }
-}
-
-.nav-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: #6b7280;
-  flex-shrink: 0;
-}
-
-.nav-text {
-  flex: 1;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.submenu-container {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.25s ease;
-
-  &.open { max-height: 500px; }
 }
 
 .nav-child-wrapper {
   display: flex;
   align-items: center;
-  margin: 1px 8px;
-  border-radius: 6px;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #f3f4f6;
-
-    .nav-child-item { color: #111827; }   // was #fff
-    .child-add-btn { opacity: 1; }
-  }
+  position: relative;
+  margin: 2px 0;
 }
 
 .nav-child-item {
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 8px 4px 8px 44px;
+  padding: 9px 12px 9px 40px;
   text-decoration: none;
-  color: #6b7280; 
-  border-radius: 6px 0 0 6px;
+  color: #6b7280;
   font-size: 13px;
-  cursor: pointer;
-  transition: color 0.15s;
+  border-radius: 6px;
+  transition: all 0.2s;
 
-  &:hover { background: transparent; }
+  &:hover { background: #f9fafb; color: #111827; }
 
   &.nav-active {
-    background: #eff6ff;      // was #3b82f6
-    color: #3b82f6; 
-    border-radius: 6px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 500;
+    
+    // The "Professional Accent Bar"
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      width: 3px;
+      background: #2563eb;
+      border-radius: 0 4px 4px 0;
+    }
   }
-
-  .nav-text { flex: 1; }
 }
 
 .child-add-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: none;
-  border: none;
-  border-radius: 0 6px 6px 0;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s;
-  padding: 0;
-  margin-right: 4px;
-  flex-shrink: 0;
-
-  mat-icon {
-    font-size: 15px;
-    width: 15px;
-    height: 15px;
-    color: #9ca3af;
-  }
-
-   &:hover mat-icon { color: #3b82f6; }
+  background: none; border: none; cursor: pointer;
+  padding: 6px; margin-right: 8px; opacity: 0;
+  transition: all 0.2s;
+  mat-icon { font-size: 16px; color: #9ca3af; }
+  &:hover mat-icon { color: #2563eb; }
 }
+
+.nav-child-wrapper:hover .child-add-btn { opacity: 1; }
 
 .sidebar-footer {
   margin-top: auto;
-  padding: 8px 0;
-  border-top: 1px solid #e8e8e8;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  
+  .logout-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; color: #6b7280; cursor: pointer;
+    border-radius: 8px; font-size: 13px;
+    &:hover { background: #fef2f2; color: #dc2626; }
+  }
+}
 
-   .logout-item { color: #9ca3af; }  // was #6b7280
+.submenu-container {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.25s ease-out;
 
+  &.open {
+    max-height: 500px; // large enough to fit all children
+    transition: max-height 0.3s ease-in;
+  }
 }
