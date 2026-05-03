@@ -30,6 +30,7 @@ export class CustomerLicenseFormComponent implements OnInit {
   organizations: any[] = [];
   applications: any[] = [];
   allLicenseTypes: any[] = [];
+  isSubmitting = false;
   filteredTypes: any[] = [];
   isEditMode = false;
   licenseId: string | null = null;
@@ -104,7 +105,8 @@ export class CustomerLicenseFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.customerForm.invalid) return;
+    if (this.customerForm.invalid || this.isSubmitting) return;
+    this.isSubmitting = true;
 
     const { appId, orgId, licenseTypeId, licenseCount, isActive } = this.customerForm.getRawValue();
     const payload: CreateCustomerLicensePayload = {
@@ -118,12 +120,18 @@ export class CustomerLicenseFormComponent implements OnInit {
     if (this.isEditMode && this.licenseId) {
       this.licenseService.update(this.licenseId, payload).subscribe({
         next: () => this.router.navigate(['/licenses/assignments']),
-        error: (err: any) => console.error('Error updating:', err)
+        error: (err: any) => {
+          console.error('Error updating:', err);
+          this.isSubmitting = false;
+        }
       });
     } else {
       this.licenseService.createCustomerLicense(payload).subscribe({
         next: () => this.router.navigate(['/licenses/assignments']),
-        error: (err: any) => console.error('Error creating:', err)
+        error: (err: any) => {
+          console.error('Error creating:', err);
+          this.isSubmitting = false;
+        }
       });
     }
   }

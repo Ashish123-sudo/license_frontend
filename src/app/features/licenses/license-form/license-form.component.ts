@@ -25,6 +25,7 @@ export class LicenseFormComponent implements OnInit {
   applications: any[] = [];
   isEditMode = false;
   licenseTypeId: string | null = null;
+  isSubmitting = false;
 
   ngOnInit() {
     this.licenseTypeId = this.route.snapshot.paramMap.get('id');
@@ -64,7 +65,8 @@ export class LicenseFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.licenseForm.invalid) return;
+    if (this.licenseForm.invalid || this.isSubmitting) return;
+    this.isSubmitting = true;
 
     const { appId, pricingPlan, pricingLimit, limitUom, limitFrequency } = this.licenseForm.getRawValue();
     const payload: CreateLicenseTypePayload = {
@@ -78,12 +80,18 @@ export class LicenseFormComponent implements OnInit {
     if (this.isEditMode && this.licenseTypeId) {
       this.licenseTypeService.update(this.licenseTypeId, payload).subscribe({
         next: () => this.router.navigate(['/licenses/types']),
-        error: (err) => console.error('Error updating license type:', err)
+        error: (err) => {
+          console.error('Error updating license type:', err);
+          this.isSubmitting = false;
+        }
       });
     } else {
       this.licenseTypeService.saveLicenseType(payload).subscribe({
         next: () => this.router.navigate(['/licenses/types']),
-        error: (err) => console.error('Error saving license type:', err)
+        error: (err) => {
+          console.error('Error saving license type:', err);
+          this.isSubmitting = false;
+        }
       });
     }
   }

@@ -71,8 +71,8 @@
       </div>
 
       <div class="form-actions-footer">
-        <button type="submit" class="btn-primary" [disabled]="!licenseForm.valid">
-          {{ isEditMode ? 'Update License Type' : 'Create License Type' }}
+        <button type="submit" class="btn btn-save" [disabled]="!licenseForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
         </button>
         <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
       </div>
