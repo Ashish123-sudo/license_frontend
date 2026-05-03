@@ -24,8 +24,7 @@ import { LogoutDialogComponent } from '../../shared/logout-dialog/logout-dialog.
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    CommonModule,
-    MatDialog
+    CommonModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
